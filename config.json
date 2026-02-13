@@ -1,0 +1,55 @@
+{
+    "can_interfaces": [
+        "vcan0",
+        "vcan1"
+    ],
+    "producer": {
+        "data_binding": [
+            {
+                "source": "temperature_sensor1",
+                "destination": {
+                    "interface": "vcan0",
+                    "msg_id": "0x100"
+                }
+            },
+            {
+                "source": "speed_sensor1",
+                "destination": {
+                    "interface": "vcan0",
+                    "msg_id": "0x200"
+                }
+            },
+            {
+                "source": "temperature_sensor2",
+                "destination": {
+                    "interface": "vcan1",
+                    "msg_id": "0x300"
+                }
+            },
+            {
+                "source": "speed_sensor2",
+                "destination": {
+                    "interface": "vcan1",
+                    "msg_id": "0x400"
+                }
+            }
+        ]
+    },
+    "presenter": {
+        "broker": "localhost",
+        "port": 1883,
+        "topics": [
+            "sensors/temperature",
+            "sensors/speed"
+        ],
+        "log_file": "/tmp/presenter.log"
+    },
+    "bridge": {
+        "mqtt_broker": "localhost",
+        "mqtt_port": 1883,
+        "mqtt_topics": [
+            "sensors/temperature",
+            "sensors/speed"
+        ]
+    }
+}

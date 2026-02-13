@@ -1,0 +1,19 @@
+[Unit]
+Description=CAN MQTT IPC Presenter
+After=mosquitto.service
+Wants=mosquitto.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/can_mqtt_ipc/presenter
+Environment="PATH=/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStartPre=/usr/bin/poetry install --no-root
+ExecStart=/usr/bin/poetry run python main.py --config /opt/can_mqtt_ipc/config.json
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=20
+KillMode=control-group
+ExecStop=/bin/kill -TERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target

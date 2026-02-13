@@ -1,0 +1,16 @@
+[Unit]
+Description=Load vcan driver and create vcan0 and vcan1 virtual CAN interfaces
+After=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+# Single-line start: load module, create interfaces if missing, and bring up
+ExecStart=/bin/sh -c '/sbin/modprobe vcan && (/sbin/ip link add dev vcan0 type vcan 2>/dev/null || true) && (/sbin/ip link add dev vcan1 type vcan 2>/dev/null || true) && /sbin/ip link set vcan0 up 2>/dev/null || true && /sbin/ip link set vcan1 up 2>/dev/null || true'
+
+# Single-line stop: bring down and delete interfaces, then try to remove module
+ExecStop=/bin/sh -c '/sbin/ip link set vcan0 down 2>/dev/null || true; /sbin/ip link set vcan1 down 2>/dev/null || true; /sbin/ip link delete vcan0 2>/dev/null || true; /sbin/ip link delete vcan1 2>/dev/null || true; /sbin/rmmod vcan || true'
+
+[Install]
+WantedBy=multi-user.target

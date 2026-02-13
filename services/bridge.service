@@ -1,0 +1,17 @@
+[Unit]
+Description=CAN MQTT IPC Bridge
+After=vcan.service mosquitto.service
+Wants=vcan.service mosquitto.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/can_mqtt_ipc/bridge
+ExecStart=/opt/can_mqtt_ipc/bridge/bridge --config /opt/can_mqtt_ipc/config.json
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=20
+KillMode=control-group
+ExecStop=/bin/kill -TERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target

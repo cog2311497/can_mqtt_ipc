@@ -1,0 +1,17 @@
+[Unit]
+Description=CAN MQTT IPC Producer
+After=vcan.service
+Wants=vcan.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/can_mqtt_ipc/producer
+ExecStart=/opt/can_mqtt_ipc/producer/producer --config /opt/can_mqtt_ipc/config.json
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=20
+KillMode=control-group
+ExecStop=/bin/kill -TERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target
