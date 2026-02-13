@@ -26,10 +26,10 @@ bool SensorDataSource::start() {
 
     try {
         worker_thread_ = std::make_unique<std::thread>(&SensorDataSource::thread_worker, this);
-        std::cout << "Data source thread started\n";
+        std::cout << "Data source thread started" << std::endl;
         return true;
     } catch (const std::exception& e) {
-        std::cerr << "Failed to start data source thread: " << e.what() << "\n";
+        std::cerr << "Failed to start data source thread: " << e.what() << std::endl;
         running_.store(false);
         return false;
     }
@@ -51,20 +51,22 @@ void SensorDataSource::wait() {
 
 
 void SensorDataSource::thread_worker() {
-    std::cout << "Worker thread started (ID: " << std::this_thread::get_id() << ")\n";
+    std::cout << "Worker thread started (ID: " << std::this_thread::get_id() << ")" << std::endl;
 
     while (running_.load()) {
-        std::lock_guard<std::mutex> cb_lock(callback_mutex_);
-        if (data_callback_) {
-            SensorData data;
-            data.sensor_id = static_cast<uint8_t>(get_sensor_id());
-            data.value = get_sensor_value();
-            data_callback_(data);
+        {
+            std::lock_guard<std::mutex> cb_lock(callback_mutex_);
+            if (data_callback_) {
+                SensorData data;
+                data.sensor_id = static_cast<uint8_t>(get_sensor_id());
+                data.value = get_sensor_value();
+                data_callback_(data);
+            }
         }
         std::this_thread::sleep_for(get_sensor_response_time());
     }
 
-    std::cout << "Worker thread exiting\n";
+    std::cout << "Worker thread exiting (ID: " << std::this_thread::get_id() << ")" << std::endl;
 }
 
 SensorId SensorDataSource::get_sensor_id() const {

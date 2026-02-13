@@ -22,7 +22,7 @@ namespace {
                 if (i + 1 < args.size()) {
                     s.config_file = args[++i];
                 } else {
-                    std::cerr << "Error: --config requires a filename\n";
+                    std::cerr << "Error: --config requires a filename argument" << std::endl;
                     return std::nullopt;
                 }
             }
@@ -36,15 +36,15 @@ std::optional<nlohmann::json> load_config(int argc, char* argv[]) {
     auto args = parse_args({argv, static_cast<size_t>(argc)});
 
     if (args && !args->config_file.empty()) {
-        std::cout << "Loading config from: " << args->config_file << "\n";
+        std::cout << "Loading config from: " << args->config_file << std::endl;
     } else {
-        std::cout << "No config file provided. Using defaults.\n";
+        std::cout << "No config file provided. Using defaults." << std::endl;
         return std::nullopt;
     }
 
     std::ifstream config_file(std::filesystem::path(args->config_file));
     if (!config_file) {
-        std::cerr << "Failed to open config file: " << args->config_file << "\n";
+        std::cerr << "Failed to open config file: " << args->config_file << std::endl;
         return std::nullopt;
     }
 
@@ -54,7 +54,7 @@ std::optional<nlohmann::json> load_config(int argc, char* argv[]) {
     if (nlohmann::json::accept(content)) {
         return nlohmann::json::parse(content);  // parse content into the json object
     } else {
-        std::cerr << "Failed to parse config file: content is not valid JSON\n";
+        std::cerr << "Failed to parse config file: content is not valid JSON" << std::endl;
         return std::nullopt;
     }
 }

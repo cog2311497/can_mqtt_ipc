@@ -13,7 +13,7 @@ set(EXTERNAL_SOURCES
     ../common/sensors/sensor_data.cpp
 )
 
-add_executable(bridge main.cpp ${EXTERNAL_SOURCES})
+add_executable(bridge main.cpp bridge.cpp ${EXTERNAL_SOURCES})
 
 target_include_directories(bridge PRIVATE ../common)
 

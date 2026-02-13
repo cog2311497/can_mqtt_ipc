@@ -52,7 +52,11 @@ bool LinuxSocketCanSender::send(const CanFrame& frame) {
     cf.can_id = frame.id | (frame.is_extended ? CAN_EFF_FLAG : 0);
     cf.can_dlc = frame.data.size();
     std::memcpy(cf.data, frame.data.data(), cf.can_dlc);
-    int nbytes = write(sock_, &cf, CAN_MTU);
+    int nbytes = 0;
+    {
+        std::lock_guard<std::mutex> lock(send_mutex_);
+        nbytes = write(sock_, &cf, CAN_MTU);
+    }
 
     return nbytes == CAN_MTU;
 }

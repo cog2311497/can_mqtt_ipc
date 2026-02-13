@@ -136,7 +136,7 @@ void LinuxSocketCanReceiver::receive_loop()
         if (ret < 0) {
             if (errno == EINTR)
                 continue;
-            std::cerr << "poll() error: " << std::strerror(errno) << "\n";
+            std::cerr << "poll() error: " << std::strerror(errno) << std::endl;
             break;
         }
 
@@ -144,7 +144,7 @@ void LinuxSocketCanReceiver::receive_loop()
             continue; // timeout, loop again
 
         if (pfd.revents & (POLLERR | POLLNVAL)) {
-            std::cerr << "poll() returned error on socket\n";
+            std::cerr << "poll() returned error on socket" << std::endl;
             break;
         }
 
@@ -174,12 +174,12 @@ void LinuxSocketCanReceiver::receive_loop()
                 try {
                     cb(f);
                 } catch (const std::exception& e) {
-                    std::cerr << "Subscriber callback threw: " << e.what() << "\n";
+                    std::cerr << "Subscriber callback threw: " << e.what() << std::endl;
                 } catch (...) {
-                    std::cerr << "Subscriber callback threw unknown exception\n";
+                    std::cerr << "Subscriber callback threw unknown exception" << std::endl;
                 }
             }
         }
     }
-    std::cout << "Worker thread exiting\n";
+    std::cout << "Worker thread exiting" << std::endl;
 }

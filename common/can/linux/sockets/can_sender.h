@@ -2,6 +2,7 @@
 
 #include <string>
 #include <utility>
+#include <mutex>
 
 #include "can/ican_sender.h"
 
@@ -29,4 +30,5 @@ private:
     std::string ifname_;
     int sock_{-1};
     bool open_{false};
+    std::mutex send_mutex_;
 };

@@ -12,6 +12,6 @@ set(EXTERNAL_SOURCES
     ../common/sensors/sensor_data.cpp
 )
 
-add_executable(producer main.cpp ${EXTERNAL_SOURCES})
+add_executable(producer main.cpp producer.cpp ${EXTERNAL_SOURCES})
 
 target_include_directories(producer PRIVATE ../common)
