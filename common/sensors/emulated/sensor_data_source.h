@@ -24,8 +24,8 @@
 #pragma once
 
 #include <thread>
+#include <stop_token>
 #include <mutex>
-#include <atomic>
 #include <memory>
 #include <chrono>
 
@@ -53,14 +53,13 @@ public:
     }
 
 protected:
-    void thread_worker();
+    void thread_worker(std::stop_token stopToken);
     SensorId get_sensor_id() const;
     float get_sensor_value() const;
     std::chrono::seconds get_sensor_response_time() const;
 
 private:
-    std::unique_ptr<std::thread> worker_thread_;
-    std::atomic<bool> running_{false};
+    std::jthread worker_thread_;
     std::mutex callback_mutex_;
     DataCallback<SensorData> data_callback_;
     std::string name_;

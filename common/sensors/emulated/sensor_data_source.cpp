@@ -35,6 +35,7 @@ SensorDataSource::SensorDataSource(std::string name) : name_(std::move(name)) {}
 
 SensorDataSource::~SensorDataSource() {
     stop();
+    wait();
 }
 
 void SensorDataSource::register_callback(DataCallback<SensorData> callback) {
@@ -43,40 +44,41 @@ void SensorDataSource::register_callback(DataCallback<SensorData> callback) {
 }
 
 bool SensorDataSource::start() {
-    if (running_.exchange(true)) {
+    if (worker_thread_.joinable()) {
         return false;
     }
 
     try {
-        worker_thread_ = std::make_unique<std::thread>(&SensorDataSource::thread_worker, this);
+        worker_thread_ = std::jthread([this](std::stop_token st) { this->thread_worker(st); });
         std::cout << "Data source thread started" << std::endl;
         return true;
     } catch (const std::exception& e) {
         std::cerr << "Failed to start data source thread: " << e.what() << std::endl;
-        running_.store(false);
         return false;
     }
 }
 
 void SensorDataSource::stop() {
-    running_.exchange(false);
+    if (worker_thread_.joinable()) {
+        worker_thread_.request_stop();
+    }
 }
 
 bool SensorDataSource::is_running() const {
-    return running_.load();
+    return worker_thread_.joinable() && !worker_thread_.get_stop_token().stop_requested();
 }
 
 void SensorDataSource::wait() {
-    if (worker_thread_ && worker_thread_->joinable()) {
-        worker_thread_->join();
+    if (worker_thread_.joinable()) {
+        worker_thread_.join();
     }
 }
 
 
-void SensorDataSource::thread_worker() {
+void SensorDataSource::thread_worker(std::stop_token stopToken) {
     std::cout << "Worker thread started (ID: " << std::this_thread::get_id() << ")" << std::endl;
 
-    while (running_.load()) {
+    while (!stopToken.stop_requested()) {
         {
             std::lock_guard<std::mutex> cb_lock(callback_mutex_);
             if (data_callback_) {

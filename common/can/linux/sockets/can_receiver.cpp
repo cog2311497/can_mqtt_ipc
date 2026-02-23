@@ -73,28 +73,23 @@ bool LinuxSocketCanReceiver::open()
 
 bool LinuxSocketCanReceiver::start()
 {
-    running_.store(true);
-    worker_ = std::thread(&LinuxSocketCanReceiver::receive_loop, this);
+    if (worker_.joinable())
+        return false;
+
+    worker_ = std::jthread([this](std::stop_token st) { this->receive_loop(st); });
 
     return true;
 }
 
 void LinuxSocketCanReceiver::stop()
 {
-    running_.store(false);
+    if (worker_.joinable()) {
+        worker_.request_stop();
+    }
 }
 
 void LinuxSocketCanReceiver::close()
 {
-    running_.store(false);
-
-    if (socket_fd_ >= 0)
-    {
-        ::shutdown(socket_fd_, SHUT_RDWR);
-    }
-
-    if (worker_.joinable())
-        worker_.join();
 
     if (socket_fd_ >= 0)
     {
@@ -140,11 +135,11 @@ void LinuxSocketCanReceiver::unsubscribe(uint64_t id)
         std::remove_if(subscribers_.begin(), subscribers_.end(), [id](auto& s) { return s.first == id; }), subscribers_.end());
 }
 
-void LinuxSocketCanReceiver::receive_loop()
+void LinuxSocketCanReceiver::receive_loop(std::stop_token stopToken)
 {
     struct pollfd pfd{};
 
-    while (running_.load())
+    while (!stopToken.stop_requested())
     {
         if (socket_fd_ < 0) {
             // Socket closed or invalid; wait a bit and retry
