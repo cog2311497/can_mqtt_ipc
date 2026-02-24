@@ -30,7 +30,8 @@ sudo apt install -y \
   python3-pip \
   mosquitto \
   mosquitto-clients \
-  python3-poetry
+  python3-poetry \
+  nlohmann-json3-dev
 
 # clone and build and install paho.mqtt c++ wrapper
 git clone https://github.com/eclipse/paho.mqtt.cpp.git

@@ -54,7 +54,7 @@ copy_files services/producer.service /etc/systemd/system/producer.service
 copy_files services/bridge.service /etc/systemd/system/bridge.service
 copy_files services/presenter.service /etc/systemd/system/presenter.service
 
-cd "$DEST/presenter"
+cd "./presenter"
 poetry install --no-interaction --no-root --only=main
 cd -
 
