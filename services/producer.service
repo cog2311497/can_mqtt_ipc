@@ -1,7 +1,7 @@
 [Unit]
 Description=CAN MQTT IPC Producer
-After=vcan.service
-Wants=vcan.service
+After=vcan-iface.target
+Requires=vcan-iface.target
 
 [Service]
 Type=simple

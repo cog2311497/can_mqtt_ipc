@@ -1,0 +1,18 @@
+[Unit]
+Description=Create and manage virtual CAN interface %i
+After=vcan.service
+Requires=vcan.service
+PartOf=vcan-iface.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+# Create interface (e.g., vcan0, vcan1) if it doesn't exist and bring it up
+ExecStart=/bin/sh -c '/sbin/ip link add dev %i type vcan 2>/dev/null || true; /sbin/ip link set %i up'
+
+# Bring down and delete interface
+ExecStop=/bin/sh -c '/sbin/ip link set %i down 2>/dev/null || true; /sbin/ip link delete %i 2>/dev/null || true'
+
+[Install]
+WantedBy=multi-user.target

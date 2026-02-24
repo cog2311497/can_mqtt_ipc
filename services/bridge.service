@@ -1,7 +1,7 @@
 [Unit]
 Description=CAN MQTT IPC Bridge
-After=vcan.service mosquitto.service
-Wants=vcan.service mosquitto.service
+After=vcan-iface.target mosquitto.service
+Wants=vcan-iface.target mosquitto.service
 
 [Service]
 Type=simple
