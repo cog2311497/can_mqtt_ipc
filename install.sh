@@ -19,12 +19,11 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-rm -rf "$DEST/*"
+rm -rf "$DEST"/{*,.*} 2>/dev/null
 
 mkdir -p "$DEST/presenter"
 mkdir -p "$DEST/bridge"
 mkdir -p "$DEST/producer"
-mkdir -p "$DEST/vcan"
 
 copy_files() {
   local src="$1" dst="$2"
@@ -34,7 +33,7 @@ copy_files() {
 
 copy_dir() {
   local src="$1" dst="$2"
-  sudo cp -r "$src" "$dst"
+  sudo cp -r "$src"/* "$dst"
   echo "Copied: $src -> $dst"
 }
 
@@ -54,11 +53,14 @@ copy_files services/producer.service /etc/systemd/system/producer.service
 copy_files services/bridge.service /etc/systemd/system/bridge.service
 copy_files services/presenter.service /etc/systemd/system/presenter.service
 
-cd "./presenter"
-poetry install --no-interaction --no-root --only=main
-cd -
-
-copy_dir presenter/.venv "$DEST/presenter/"
+mkdir -p "$DEST/presenter/venv"
+venv_dir=$(echo build/presenter/presenter-*-py*)
+if [ -d "$venv_dir" ]; then
+  copy_dir "$venv_dir" "$DEST/presenter/venv"
+else
+  echo "Erro: No presenter virtual environment found. Skipping."
+  exit 1
+fi
 
 INTERFACES=$(jq -r '.can_interfaces[]' "./config.json" 2>/dev/null)
 

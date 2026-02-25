@@ -6,7 +6,7 @@ Wants=mosquitto.service
 [Service]
 Type=simple
 WorkingDirectory=/opt/can_mqtt_ipc/presenter
-ExecStart=/opt/can_mqtt_ipc/presenter/.venv/bin/python main.py --config /opt/can_mqtt_ipc/config.json
+ExecStart=/opt/can_mqtt_ipc/presenter/venv/bin/python main.py --config /opt/can_mqtt_ipc/config.json
 Restart=on-failure
 RestartSec=5s
 TimeoutStopSec=20
