@@ -7,9 +7,8 @@ A system for bridging CAN interfaces with MQTT, featuring sensor data producer, 
 - **producer/** — C++ app that generates sensor data and publishes to CAN interfaces
 - **bridge/** — C++ app that bridges CAN messages to MQTT
 - **presenter/** — Python app that subscribes to MQTT topics and displays messages
-- **common/** — Shared headers for CAN frames, CAN reader/writer config parsing, and sensor data
+- **common/** — Shared static library, CAN reader/writer config parsing, and sensor data
 - **services/** — Systemd unit files for process management
-- **vcan/** — Virtual CAN network setup
 
 ## Prerequisites
 
@@ -32,8 +31,10 @@ sudo apt install -y \
   mosquitto-clients \
   python3-poetry \
   nlohmann-json3-dev
+```
 
-# clone and build and install paho.mqtt c++ wrapper
+### Clone and build and install paho.mqtt c++ wrapper
+```bash
 git clone https://github.com/eclipse/paho.mqtt.cpp.git
 cd paho.mqtt.cpp
 mkdir build && cd build
@@ -41,9 +42,9 @@ cmake ..
 make
 sudo make install
 sudo ldconfig
+```
 
-
-### Virtual CAN Setup
+### Virtual CAN Setup example for testing/develop purpose
 
 Enable virtual CAN interfaces for testing (if you build and run apps manually, before call install):
 
@@ -62,7 +63,7 @@ ip link show | grep vcan
 candump vcan0
 ```
 
-### Mosquitto MQTT Broker
+### Mosquitto MQTT Broker usage
 
 ```bash
 # Start Mosquitto (if not running as systemd service)
@@ -109,7 +110,7 @@ cmake --build . --target bridge
 #### 1. Start Virtual CAN and Mosquitto
 
 ```bash
-# Terminal 1: Ensure vcan and MQTT are running
+# Terminal: Ensure vcan and MQTT are running
 sudo ip link set up vcan0
 sudo ip link set up vcan1
 mosquitto  # or sudo systemctl start mosquitto
@@ -118,7 +119,7 @@ mosquitto  # or sudo systemctl start mosquitto
 #### 2. Run Producer
 
 ```bash
-# Terminal 2: Start the producer (generates sensor data to CAN)
+# Terminal: Start the producer (generates sensor data to CAN)
 cd build
 ./producer/producer --config ../../../config.json
 ```
@@ -126,14 +127,14 @@ cd build
 #### 3. Run Bridge
 
 ```bash
-# Terminal 3: Start the bridge (CAN -> MQTT)
+# Terminal: Start the bridge (CAN -> MQTT)
 ./bridge/bridge  --config ../../../config.json
 ```
 
 #### 4. Run Presenter/Consumer
 
 ```bash
-# Terminal 4: Start the presenter (subscribes to MQTT)
+# Terminal: Start the presenter (subscribes to MQTT)
 cd presenter
 poetry install
 poetry run python presenter/main.py --config ../config.json
@@ -142,7 +143,7 @@ poetry run python presenter/main.py --config ../config.json
 #### 5. Monitor MQTT Messages
 
 ```bash
-# Terminal 5: Subscribe to all MQTT topics
+# Terminal: Subscribe to all MQTT topics
 mosquitto_sub -t '#' -v
 ```
 
@@ -152,6 +153,12 @@ Install as systemd services:
 
 ```bash
 sudo bash install.sh
+```
+
+Stop and Uninstall as systemd services:
+
+```bash
+sudo bash uninstall.sh
 ```
 
 This script:
