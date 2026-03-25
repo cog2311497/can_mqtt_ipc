@@ -80,7 +80,7 @@ mosquitto -c /etc/mosquitto/mosquitto.conf
 
 ```bash
 # Configure
-mkdir -p build
+mkdir build
 cd build
 cmake ..
 
@@ -149,16 +149,29 @@ mosquitto_sub -t '#' -v
 
 ### Production (Systemd Services)
 
-Install as systemd services:
+From main project directory install as systemd services:
 
 ```bash
-sudo bash install.sh
+sudo install.sh
+```
+
+or alternatively
+
+```bash
+# default paths (/opt/can_mqtt_ipc, /etc/systemd/system)
+sudo cmake -P cmake_install.cmake
 ```
 
 Stop and Uninstall as systemd services:
 
 ```bash
-sudo bash uninstall.sh
+sudo uninstall.sh
+```
+
+or alternatively
+
+```bash
+sudo cmake -P cmake_uninstall.cmake
 ```
 
 This script:
